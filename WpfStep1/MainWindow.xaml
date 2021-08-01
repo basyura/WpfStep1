@@ -21,12 +21,26 @@
             <RowDefinition />
         </Grid.RowDefinitions>
         <StackPanel>
+            <TextBlock Text="{Binding User.Name}" />
+            <Button Content="Change User" Command="{Binding ChangeUserCommand}"/>
             <TextBlock Text="{Binding Message}" />
-            <TextBox Text="{Binding Text}" />
-            <Button Content="GetTex">
+            <TextBox Text="{Binding Text, UpdateSourceTrigger=PropertyChanged}" />
+            <!--
+            <Button Content="GetText" Command="{Binding GetTextCommand}" />
+            -->
+            <Button Content="GetTex Command Command Binding" Command="{Binding GetTextCommand}"/>
+            <Button Content="GetTex Command EventTrigger" IsEnabled="{Binding GetTextCommand.CanExecute}">
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="Click" >
                         <i:InvokeCommandAction Command="{Binding GetTextCommand}" />
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </Button>
+            <Button Content="GetTex Delegate Command Binding" Command="{Binding GetTextDelegateCommand}"/>
+            <Button Content="GetTex Delegate EventTrigger" IsEnabled="{Binding GetTextCommand.CanExecute}">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="Click" >
+                        <i:InvokeCommandAction Command="{Binding GetTextDelegateCommand}" />
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
             </Button>

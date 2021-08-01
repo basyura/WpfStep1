@@ -6,15 +6,26 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using WpfStep1.Commands;
+using WpfStep1.Models;
 
 namespace WpfStep1
 {
     public class MainWindowViewModel : BindableBase
     {
+        private User _User;
+        public User User 
+        {
+            get { return _User; }
+            set { SetProperty(ref _User, value); }
+        }
         /// <summary></summary>
         public ICommand InitializeCommand { get; set; }
         /// <summary></summary>
-        public ICommand GetTextCommand { get; set; }
+        public ICommand ChangeUserCommand { get; set; }
+        /// <summary></summary>
+        public CommandBase GetTextCommand { get; set; }
+        /// <summary></summary>
+        public DelegateCommand GetTextDelegateCommand { get; set; }
         /// <summary>
         /// 
         /// </summary>
@@ -23,13 +34,25 @@ namespace WpfStep1
             // Initialize
             InitializeCommand = new DelegateCommand(() =>
             {
+                User = new User()
+                {
+                    Name = "yamada taro",
+                };
                 Message = "Hello";
                 Text = "Wpf 導入ツール";
             });
+            // Change User
+            ChangeUserCommand = new ChangeUserCommand(this);
             // get text 
-            GetTextCommand = new DelegateCommand(() =>
+            GetTextCommand = new GetTextCommand(this);
+            // get text delaegate
+            GetTextDelegateCommand = new DelegateCommand(() =>
             {
-                MessageBox.Show(Text);
+                MessageBox.Show(this.Text);
+            },
+            () =>
+            {
+                return !string.IsNullOrEmpty(this.Text);
             });
         }
         /// <summary>
@@ -48,7 +71,12 @@ namespace WpfStep1
         public string Text
         {
             get { return _text; }
-            set { SetProperty(ref _text, value); }
+            set
+            {
+                SetProperty(ref _text, value);
+                GetTextCommand.RaiseCanExecuteChanged();
+                GetTextDelegateCommand.RaiseCanExecuteChanged();
+            }
         }
     }
 }

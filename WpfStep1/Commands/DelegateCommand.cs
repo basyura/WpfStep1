@@ -8,7 +8,7 @@ namespace WpfStep1.Commands
     /// </summary>
     /// <see cref="DelegateCommandBase"/>
     /// <see cref="DelegateCommand{T}"/>
-    public class DelegateCommand : ICommand
+    public class DelegateCommand : BindableBase, ICommand
     {
         Action _executeMethod;
         Func<bool> _canExecuteMethod;
@@ -44,16 +44,19 @@ namespace WpfStep1.Commands
         /// Determines if the command can be executed.
         /// </summary>
         /// <returns>Returns <see langword="true"/> if the command can execute,otherwise returns <see langword="false"/>.</returns>
-        public bool CanExecute()
+        public bool CanExecute
         {
-            return _canExecuteMethod();
+            get
+            {
+                return _canExecuteMethod();
+            }
         }
 
         /// <summary>
         /// Handle the internal invocation of <see cref="ICommand.Execute(object)"/>
         /// </summary>
         /// <param name="parameter">Command Parameter</param>
-        public void Execute(object parameter)
+        void ICommand.Execute(object parameter)
         {
             Execute();
         }
@@ -63,19 +66,23 @@ namespace WpfStep1.Commands
         /// </summary>
         /// <param name="parameter"></param>
         /// <returns><see langword="true"/> if the Command Can Execute, otherwise <see langword="false" /></returns>
-        public bool CanExecute(object parameter)
+        bool ICommand.CanExecute(object parameter)
         {
-            return CanExecute();
+            return CanExecute;
         }
-
 
         /// <summary>
         /// 
         /// </summary>
-        public event EventHandler CanExecuteChanged;
         public void RaiseCanExecuteChanged()
         {
-            CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+            RaisePropertyChanged("CanExecute");
+        }
+
+        public event EventHandler CanExecuteChanged
+        {
+            add { CommandManager.RequerySuggested += value; }
+            remove { CommandManager.RequerySuggested -= value; }
         }
     }
 }
